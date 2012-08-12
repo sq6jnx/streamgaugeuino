@@ -1,0 +1,5 @@
+trackuino-ide*/*
+
+*.cpp
+*.h
+*.zip

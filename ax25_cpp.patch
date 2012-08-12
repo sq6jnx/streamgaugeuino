@@ -1,0 +1,11 @@
+--- trackuino-ide-1.31/trackuino/ax25.cpp	2011-08-02 11:46:24.000000000 +0200
++++ ax25.cpp	2012-08-12 15:05:25.702200785 +0200
+@@ -18,7 +18,7 @@
+ #include "ax25.h"
+ #include "config.h"
+ #include "modem.h"
+-#include <WProgram.h>
++#include <Arduino.h>
+ 
+ // Module globals
+ unsigned short int crc;

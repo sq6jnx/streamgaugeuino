@@ -1,0 +1,52 @@
+--- trackuino-ide-1.31/trackuino/aprs.cpp	2011-08-02 11:46:24.000000000 +0200
++++ aprs.cpp	2012-08-12 14:45:58.536413120 +0200
+@@ -17,7 +17,7 @@
+ 
+ #include "config.h"
+ #include "ax25.h"
+-#include "gps.h"
++//#include "gps.h"
+ #include "aprs.h"
+ #include "sensors.h"
+ #include <stdio.h>
+@@ -30,6 +30,7 @@
+   return m / 0.3048;
+ }
+ 
++
+ // Exported functions
+ void aprs_send()
+ {
+@@ -47,23 +48,24 @@
+ 
+   ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+   ax25_send_byte('/');                // Report w/ timestamp, no APRS messaging. $ = NMEA raw data
+-  // ax25_send_string("021709z");     // 021709z = 2nd day of the month, 17:09 zulu (UTC/GMT)
+-  ax25_send_string(gps_time);         // 170915 = 17h:09m:15s zulu (not allowed in Status Reports)
++  ax25_send_string("021709z");     // 021709z = 2nd day of the month, 17:09 zulu (UTC/GMT)
++  //ax25_send_string(gps_time);         // 170915 = 17h:09m:15s zulu (not allowed in Status Reports)
+   ax25_send_byte('h');
+-  ax25_send_string(gps_aprs_lat);     // Lat: 38deg and 22.20 min (.20 are NOT seconds, but 1/100th of minutes)
++  ax25_send_string("5107.76N");     // Lat: 38deg and 22.20 min (.20 are NOT seconds, but 1/100th of minutes)
+   ax25_send_byte('/');                // Symbol table
+-  ax25_send_string(gps_aprs_lon);     // Lon: 000deg and 25.80 min
++  ax25_send_string("1654.26");     // Lon: 000deg and 25.80 min
+   ax25_send_byte('O');                // Symbol: O=balloon, -=QTH
+-  snprintf(temp, 4, "%03d", (int)(gps_course + 0.5)); 
++  snprintf(temp, 4, "%03d", (int)(270 + 0.5)); 
+   ax25_send_string(temp);             // Course (degrees)
+   ax25_send_byte('/');                // and
+-  snprintf(temp, 4, "%03d", (int)(gps_speed + 0.5));
++  snprintf(temp, 4, "%03d", (int)(5 + 0.5));
+   ax25_send_string(temp);             // speed (knots)
+   ax25_send_string("/A=");            // Altitude (feet). Goes anywhere in the comment area
+-  snprintf(temp, 7, "%06ld", (long)(meters_to_feet(gps_altitude) + 0.5));
++  snprintf(temp, 7, "%06ld", (long)(meters_to_feet(120) + 0.5));
+   ax25_send_string(temp);
+   ax25_send_string("/Ti=");
+-  ax25_send_string(itoa(sensors_int_lm60(), temp, 10));
++    //ax25_send_string(itoa(sensors_int_lm60(), temp, 10));
++  ax25_send_string(itoa('20.3456', temp, 10));
+   ax25_send_string("/Te=");
+   ax25_send_string(itoa(sensors_ext_lm60(), temp, 10));
+   ax25_send_byte(' ');

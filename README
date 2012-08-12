@@ -1,0 +1,11 @@
+===============
+streamgaugeuino
+===============
+
+(Yes, streamgaugeuino sounds silly)
+
+Software for amateur radio APRS-based tellemetry output based on Arduino.
+
+streamgaugeuino uses lots of trackuino code (see http://www.trackuino.org/) for
+AFSK/APRS generation and is released on the same license (GPL).
+

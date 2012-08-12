@@ -1,0 +1,11 @@
+--- trackuino-ide-1.31/trackuino/aprs.h	2011-08-02 11:46:24.000000000 +0200
++++ aprs.h	2012-08-12 14:45:58.536413120 +0200
+@@ -18,7 +18,7 @@
+ #ifndef __APRS_H__
+ #define __APRS_H__
+ 
+-#include "gps.h"
++//#include "gps.h"
+ 
+ void aprs_send();
+ 
