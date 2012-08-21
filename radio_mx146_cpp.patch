@@ -1,5 +1,5 @@
 --- trackuino-ide-1.31/trackuino/radio_mx146.cpp	2011-08-02 11:46:24.000000000 +0200
-+++ radio_mx146.cpp	2012-08-12 15:04:53.174039487 +0200
++++ radio_mx146.cpp	2012-08-12 20:24:05.919523208 +0200
 @@ -18,7 +18,7 @@
  #include "config.h"
  #include "radio_mx146.h"
