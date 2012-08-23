@@ -93,30 +93,114 @@ void telemetry_report_format() {
 
   ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
   ax25_send_byte('T');            // Telemetry symbol
-  // TODO:
-  ax25_send_string('#MIC');       // MIC-E format (or, maybe, serial number??)
+  // TODO: 
 
-  ax25_send_string('123');         // analog value 1
-  ax25_send_byte(',');
-  ax25_send_string('456');         // analog value 2
-  ax25_send_byte(',');
-  ax25_send_string('456');         // analog value 3
-  ax25_send_byte(',');
-  ax25_send_string('456');         // analog value 4
-  ax25_send_byte(',');
-  ax25_send_string('456');         // analog value 5
-  ax25_send_byte(',');
-  ax_send_string('00000000');      // digital value
-  ax25_send_byte(',');
-  ax_send_string('comment');       // comment
+  ax25_send_string("#MIC");       // MIC-E format (or, maybe, serial number??)
 
-  ax25_send_string(LATITUDE);     // Lat: 38deg and 22.20 min (.20 are NOT seconds, but 1/100th of minutes)
-  ax25_send_byte(SYMBOL_1);              // Symbol table
-  ax25_send_string(LONGITUDE);      // Lon: 000deg and 25.80 min
-  ax25_send_byte('#');              // Symbol: O=balloon, -=QTH
-  ax25_send_string("Vin=8.8V");     // input voltage
-  ax25_send_string("H=80/Hw=120/Ha=150/");     // sensor values
-  ax25_send_string(APRS_COMMENT);     // Comment
+  ax25_send_string("255");         // analog value 1 (3 digits)
+  ax25_send_byte(',');
+  ax25_send_string("255");         // analog value 2 (3 digits)
+  ax25_send_byte(',');
+  ax25_send_string("255");         // analog value 3 (3 digits)
+  ax25_send_byte(',');
+  ax25_send_string("255");         // analog value 4 (3 digits)
+  ax25_send_byte(',');
+  ax25_send_string("255");         // analog value 5 (3 digits)
+
+  // I'll leave it here for future generations.
+  //ax25_send_byte(',');
+  //ax25_send_string("00000000");      // digital value (8 0/1 digits)
+  //ax25_send_byte(',');
+  ax25_send_string("comment");       // comment
+  ax25_send_footer();
+  ax25_flush_frame();                 // Tell the modem to go
+}
+
+
+void parameter_name_message() {
+  const struct s_address addresses[] = { 
+    {D_CALLSIGN, D_CALLSIGN_ID},  // Destination callsign
+    {S_CALLSIGN, S_CALLSIGN_ID},  // Source callsign (-11 = balloon, -9 = car)
+#ifdef DIGI_PATH1
+    {DIGI_PATH1, DIGI_PATH1_TTL}, // Digi1 (first digi in the chain)
+#endif
+#ifdef DIGI_PATH2
+    {DIGI_PATH2, DIGI_PATH2_TTL}, // Digi2 (second digi in the chain)
+#endif
+  };
+
+  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+  ax25_send_string("PARM.");
+  ax25_send_string("Stan");       // Analog name 1 (1-6 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("Ostrz");      // Analog name 2 (1-6 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("Alar");       // Analog name 3 (1-5 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("Vin");        // Analog name 4 (1-5 letters)
+  // left here for future generations
+  //ax25_send_byte(',');            
+  //ax25_send_string("000");        // Analog name 5 (1-4 letters)
+  //ax25_send_byte(',');            
+  //ax25_send_string("0");          // Binary name 1 (1-5 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 2 (1-5 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 3 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 4 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 5 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 6 (1-2 letters)
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 7 (1-2 letters)
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 8 (1-2 letters)
+  ax25_send_footer();
+  ax25_flush_frame();                 // Tell the modem to go
+}
+
+void unit_label_message() {
+  const struct s_address addresses[] = { 
+    {D_CALLSIGN, D_CALLSIGN_ID},  // Destination callsign
+    {S_CALLSIGN, S_CALLSIGN_ID},  // Source callsign (-11 = balloon, -9 = car)
+#ifdef DIGI_PATH1
+    {DIGI_PATH1, DIGI_PATH1_TTL}, // Digi1 (first digi in the chain)
+#endif
+#ifdef DIGI_PATH2
+    {DIGI_PATH2, DIGI_PATH2_TTL}, // Digi2 (second digi in the chain)
+#endif
+  };
+
+  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+  ax25_send_string("UNIT.");
+  ax25_send_string("cm");       // Analog name 1 (1-6 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("cm");      // Analog name 2 (1-6 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("cm");       // Analog name 3 (1-5 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("V");        // Analog name 4 (1-5 letters)
+  // left here for future generations
+  //ax25_send_byte(',');            
+  //ax25_send_string("000");        // Analog name 5 (1-4 letters)
+  //ax25_send_byte(',');            
+  //ax25_send_string("0");          // Binary name 1 (1-5 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 2 (1-5 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 3 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 4 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 5 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 6 (1-2 letters)
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 7 (1-2 letters)
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 8 (1-2 letters)
   ax25_send_footer();
   ax25_flush_frame();                 // Tell the modem to go
 }
