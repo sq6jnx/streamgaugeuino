@@ -1,0 +1,199 @@
+/*
+   I'll leave it here, but I dont think I'll use it... ARPS telemetry frames
+   suxx.
+*/
+void telemetry_report_format() {
+  const struct s_address addresses[] = { 
+    {D_CALLSIGN, D_CALLSIGN_ID},  // Destination callsign
+    {S_CALLSIGN, S_CALLSIGN_ID},  // Source callsign (-11 = balloon, -9 = car)
+#ifdef DIGI_PATH1
+    {DIGI_PATH1, DIGI_PATH1_TTL}, // Digi1 (first digi in the chain)
+#endif
+#ifdef DIGI_PATH2
+    {DIGI_PATH2, DIGI_PATH2_TTL}, // Digi2 (second digi in the chain)
+#endif
+  };
+
+  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+  ax25_send_byte('T');            // Telemetry symbol
+  // TODO: 
+
+  ax25_send_string("#MIC");       // MIC-E format (or, maybe, serial number??)
+
+  ax25_send_string("255");         // analog value 1 (3 digits)
+  ax25_send_byte(',');
+  ax25_send_string("255");         // analog value 2 (3 digits)
+  ax25_send_byte(',');
+  ax25_send_string("255");         // analog value 3 (3 digits)
+  ax25_send_byte(',');
+  ax25_send_string("255");         // analog value 4 (3 digits)
+  ax25_send_byte(',');
+  ax25_send_string("255");         // analog value 5 (3 digits)
+
+  // I'll leave it here for future generations.
+  //ax25_send_byte(',');
+  //ax25_send_string("00000000");      // digital value (8 0/1 digits)
+  //ax25_send_byte(',');
+  ax25_send_string("comment");       // comment
+  ax25_send_footer();
+  ax25_flush_frame();                 // Tell the modem to go
+}
+
+
+void parameter_name_message() {
+  const struct s_address addresses[] = { 
+    {d_callsign, d_callsign_id},  // destination callsign
+    {s_callsign, s_callsign_id},  // source callsign (-11 = balloon, -9 = car)
+#ifdef digi_path1
+    {digi_path1, digi_path1_ttl}, // digi1 (first digi in the chain)
+#endif
+#ifdef digi_path2
+    {digi_path2, digi_path2_ttl}, // digi2 (second digi in the chain)
+#endif
+  };
+
+  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+  ax25_send_string("parm.");
+  ax25_send_string("stan");       // analog name 1 (1-6 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("ostrz");      // analog name 2 (1-6 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("alar");       // analog name 3 (1-5 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("vin");        // analog name 4 (1-5 letters)
+  // left here for future generations
+  //ax25_send_byte(',');            
+  //ax25_send_string("000");        // analog name 5 (1-4 letters)
+  //ax25_send_byte(',');            
+  //ax25_send_string("0");          // binary name 1 (1-5 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // binary name 2 (1-5 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // binary name 3 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // binary name 4 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // binary name 5 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // binary name 6 (1-2 letters)
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // binary name 7 (1-2 letters)
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // binary name 8 (1-2 letters)
+  ax25_send_footer();
+  ax25_flush_frame();                 // tell the modem to go
+}
+
+void unit_label_message() {
+  const struct s_address addresses[] = { 
+    {D_CALLSIGN, D_CALLSIGN_ID},  // Destination callsign
+    {S_CALLSIGN, S_CALLSIGN_ID},  // Source callsign (-11 = balloon, -9 = car)
+#ifdef DIGI_PATH1
+    {DIGI_PATH1, DIGI_PATH1_TTL}, // Digi1 (first digi in the chain)
+#endif
+#ifdef DIGI_PATH2
+    {DIGI_PATH2, DIGI_PATH2_TTL}, // Digi2 (second digi in the chain)
+#endif
+  };
+
+  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+  ax25_send_string("UNIT.");
+  ax25_send_string("cm");       // Analog name 1 (1-6 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("cm");      // Analog name 2 (1-6 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("cm");       // Analog name 3 (1-5 letters)
+  ax25_send_byte(',');            
+  ax25_send_string("V");        // Analog name 4 (1-5 letters)
+  // left here for future generations
+  //ax25_send_byte(',');            
+  //ax25_send_string("000");        // Analog name 5 (1-4 letters)
+  //ax25_send_byte(',');            
+  //ax25_send_string("0");          // Binary name 1 (1-5 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 2 (1-5 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 3 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 4 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 5 (1-3 letters)                                  
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 6 (1-2 letters)
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 7 (1-2 letters)
+  //ax25_send_byte(',');                                                                              
+  //ax25_send_string("0");          // Binary name 8 (1-2 letters)
+  ax25_send_footer();
+  ax25_flush_frame();                 // Tell the modem to go
+}
+
+void equation_coefficients_message() {
+  const struct s_address addresses[] = { 
+    {D_CALLSIGN, D_CALLSIGN_ID},  // Destination callsign
+    {S_CALLSIGN, S_CALLSIGN_ID},  // Source callsign (-11 = balloon, -9 = car)
+#ifdef DIGI_PATH1
+    {DIGI_PATH1, DIGI_PATH1_TTL}, // Digi1 (first digi in the chain)
+#endif
+#ifdef DIGI_PATH2
+    {DIGI_PATH2, DIGI_PATH2_TTL}, // Digi2 (second digi in the chain)
+#endif
+  };
+
+  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+  ax25_send_string("EQNS.");
+
+  /*               */  ax25_send_string("0"); // A1_a
+  ax25_send_byte(','); ax25_send_string("0"); // A1_b
+  ax25_send_byte(','); ax25_send_string("0"); // A1_c
+
+  ax25_send_byte(','); ax25_send_string("0"); // A2_a
+  ax25_send_byte(','); ax25_send_string("0"); // A2_b
+  ax25_send_byte(','); ax25_send_string("0"); // A2_c
+
+  ax25_send_byte(','); ax25_send_string("0"); // A3_a
+  ax25_send_byte(','); ax25_send_string("0"); // A3_b
+  ax25_send_byte(','); ax25_send_string("0"); // A3_c
+
+  ax25_send_byte(','); ax25_send_string("0"); // A4_a
+  ax25_send_byte(','); ax25_send_string("0"); // A4_b
+  ax25_send_byte(','); ax25_send_string("0"); // A4_c
+
+  ax25_send_byte(','); ax25_send_string("0"); // A5_a
+  ax25_send_byte(','); ax25_send_string("0"); // A5_b
+  ax25_send_byte(','); ax25_send_string("0"); // A5_c
+
+  ax25_send_footer();
+  ax25_flush_frame();                 // Tell the modem to go
+}
+ 
+ 
+ 
+ 
+void bit_sense_project_name_message() {
+  const struct s_address addresses[] = { 
+    {D_CALLSIGN, D_CALLSIGN_ID},  // Destination callsign
+    {S_CALLSIGN, S_CALLSIGN_ID},  // Source callsign (-11 = balloon, -9 = car)
+#ifdef DIGI_PATH1
+    {DIGI_PATH1, DIGI_PATH1_TTL}, // Digi1 (first digi in the chain)
+#endif
+#ifdef DIGI_PATH2
+    {DIGI_PATH2, DIGI_PATH2_TTL}, // Digi2 (second digi in the chain)
+#endif
+  };
+
+  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+  ax25_send_string("BITS.");
+  ax25_send_byte('0');  // B1
+  ax25_send_byte('0');  // B2
+  ax25_send_byte('0');  // B3
+  ax25_send_byte('0');  // B4
+  ax25_send_byte('0');  // B5
+  ax25_send_byte('0');  // B6
+  ax25_send_byte('0');  // B7
+  ax25_send_byte('0');  // B8
+  ax25_send_string("Bystrzyca/Jarnoltow"); // Project title, 23 bytes max
+
+  ax25_send_footer();
+  ax25_flush_frame();                 // Tell the modem to go
+}
