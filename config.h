@@ -48,36 +48,37 @@
 #define WATER_ALERT_STATE    150
 
 // Telemetry coefficients -- Ax_a will always be 0
+// caution! coefficient MUST be defined as char*!
 #define A1_name "Stan"
 #define A1_unit "cm"
-#define A1a 0
-#define A1b 1   // water level
-#define A1c 0
+#define A1a "0"
+#define A1b "1"   // water level
+#define A1c "0"
 
 #define A2_name "Vs"
 #define A2_unit "V"
-#define A2a 0
-#define A2b 0.1 // source voltage
-#define A2c 0
+#define A2a "0"
+#define A2b ".1" // source voltage
+#define A2c "0"
 
 /* unused  */
 #define A3_name ""
 #define A3_unit ""
-#define A3a 0
-#define A3b 1
-#define A3c 0
+#define A3a "0"
+#define A3b "1"
+#define A3c "0"
 
 #define A3_name ""
 #define A3_unit ""
-#define A4a 0
-#define A4b 1
-#define A4c 0
+#define A4a "0"
+#define A4b "1"
+#define A4c "0"
 
 #define A3_name ""
 #define A3_unit ""
-#define A5a 0
-#define A5b 1
-#define A5c 0
+#define A5a "0"
+#define A5b "1"
+#define A5c "0"
 
 // Sensor configuration
 #define SONAR_TRIGGER_PIN  9

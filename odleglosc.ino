@@ -1,8 +1,5 @@
 // vim: syn=cpp tabw=2
 
-
-
-
 #include "aprs.h"
 #include "ax25.h"
 //#include "buzzer.h"
@@ -24,21 +21,15 @@ void setup() {
 
 
   //pinMode(LED_PIN, OUTPUT);                                                     
-  Serial.begin(9600);                                                   
 #ifdef DEBUG_RESET                                                              
    Serial.println("RESET");                                                      
+   Serial.begin(9600);                                                   
 #endif                                                                          
    modem_setup();                                                                
    //buzzer_setup();                                                               
   pinMode(SONAR_ECHO_PIN, INPUT);
            
 }
-
-
-
-
-
-
 
 void aprs_send_position_report(char* symbol)
 {
@@ -78,16 +69,6 @@ void aprs_send_position_report(char* symbol)
   ax25_send_footer();
   ax25_flush_frame();              // Tell the modem to go
 }
-
-
-
-
-
-
-
-
-
-
 
 void aprs_send_telemetry_report(
     byte number_of_parameters, /* analog+binary! */
@@ -136,9 +117,11 @@ void aprs_send_telemetry_report(
 
 void aprs_send_telemetry_eqns(
     byte number_of_parameters, /* only analog! */
-    byte a1, byte a2=0, byte a3=0, byte a4=0, byte a5=0,
-    byte b1=0, byte b2=0, byte b3=0, byte b4=0, byte b5=0, 
-    byte b6=0, byte b7=0, byte b8=0)
+    char* A1_a="0", char* A1_b="0", char* A1_c="0",
+    char* A2_a="0", char* A2_b="0", char* A2_c="0",
+    char* A3_a="0", char* A3_b="0", char* A3_c="0",
+    char* A4_a="0", char* A4_b="0", char* A4_c="0",
+    char* A5_a="0", char* A5_b="0", char* A5_c="0")
 {
   // TODO: move this to a separate fucntion/macro
   const struct s_address addresses[] = { 
@@ -153,33 +136,74 @@ void aprs_send_telemetry_eqns(
   };
 
   ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
-  ax25_send_string("PARM.");   
+  ax25_send_string("EQNS.");   
   
   char buffer[33];
-  
-  sprintf(cVal,"%f",fVal); // string result '65' is stored in char array cVal
+  ax25_send_string(A1_a); ax25_send_byte(',');
+  ax25_send_string(A1_b); ax25_send_byte(',');
+  ax25_send_string(A1_c);   
 
-  ax25_send_string(itoa(a1, buffer, 10));   
   if(number_of_parameters>= 2) { 
-      ax25_send_byte(','); ax25_send_string(itoa(a2, buffer, 10)); }
+      ax25_send_byte(','); ax25_send_string(A2_a);   
+      ax25_send_byte(','); ax25_send_string(A2_b);   
+      ax25_send_byte(','); ax25_send_string(A2_c);   
+  }
   if(number_of_parameters>= 3) { 
-      ax25_send_byte(','); ax25_send_string(itoa(a3, buffer, 10)); }
+      ax25_send_byte(','); ax25_send_string(A3_a);   
+      ax25_send_byte(','); ax25_send_string(A3_b);   
+      ax25_send_byte(','); ax25_send_string(A3_c);   
+  }
   if(number_of_parameters>= 4) { 
-      ax25_send_byte(','); ax25_send_string(itoa(a4, buffer, 10)); }
+      ax25_send_byte(','); ax25_send_string(A4_a);   
+      ax25_send_byte(','); ax25_send_string(A4_b);   
+      ax25_send_byte(','); ax25_send_string(A4_c);   
+  }
   if(number_of_parameters>= 5) { 
-      ax25_send_byte(','); ax25_send_string(itoa(a5, buffer, 10)); }
-  if(number_of_parameters>= 6) { ax25_send_byte(b1+48); } /* 1 -> '1' */
-  if(number_of_parameters>= 7) { ax25_send_byte(b2+48); } /* 1 -> '1' */
-  if(number_of_parameters>= 8) { ax25_send_byte(b3+48); } /* 1 -> '1' */
-  if(number_of_parameters>= 9) { ax25_send_byte(b4+48); } /* 1 -> '1' */
-  if(number_of_parameters>=10) { ax25_send_byte(b5+48); } /* 1 -> '1' */
-  if(number_of_parameters>=11) { ax25_send_byte(b6+48); } /* 1 -> '1' */
-  if(number_of_parameters>=12) { ax25_send_byte(b7+48); } /* 1 -> '1' */
-  if(number_of_parameters>=13) { ax25_send_byte(b8+48); } /* 1 -> '1' */
+      ax25_send_byte(','); ax25_send_string(A5_a);   
+      ax25_send_byte(','); ax25_send_string(A5_b);   
+      ax25_send_byte(','); ax25_send_string(A5_c);   
+  }
+
+  
 
   ax25_send_footer();
   ax25_flush_frame();
 }
+
+void aprs_send_telemetry_bit_sense_project_name(
+    byte number_of_parameters, /* does not matter! */
+    byte b1=0, byte b2=0, byte b3=0, byte b4=0, byte b5=0, 
+    byte b6=0, byte b7=0, byte b8=0, char* project_name="")
+{
+  // TODO: move this to a separate fucntion/macro
+  const struct s_address addresses[] = { 
+    {D_CALLSIGN, D_CALLSIGN_ID},  // Destination callsign
+    {S_CALLSIGN, S_CALLSIGN_ID},  // Source callsign (-11 = balloon, -9 = car)
+/*#ifdef DIGI_PATH1
+    {DIGI_PATH1, DIGI_PATH1_TTL}, // Digi1 (first digi in the chain)
+#endif
+#ifdef DIGI_PATH2
+    {DIGI_PATH2, DIGI_PATH2_TTL}, // Digi2 (second digi in the chain)
+#endif*/
+  };
+
+  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
+  ax25_send_string("BITS.");   
+
+  ax25_send_byte(b1+48); /* 1 -> '1' */
+  ax25_send_byte(b2+48); /* 1 -> '1' */
+  ax25_send_byte(b3+48); /* 1 -> '1' */
+  ax25_send_byte(b4+48); /* 1 -> '1' */
+  ax25_send_byte(b5+48); /* 1 -> '1' */
+  ax25_send_byte(b6+48); /* 1 -> '1' */
+  ax25_send_byte(b7+48); /* 1 -> '1' */
+  ax25_send_byte(b8+48); /* 1 -> '1' */
+  ax25_send_string(project_name);   
+  
+  ax25_send_footer();
+  ax25_flush_frame();
+}
+
 
 
 void aprs_send_telemetry_parameter_name(
@@ -347,7 +371,6 @@ void loop() {
     aprs_send_telemetry_parameter_name(2, A1_name, A2_name); delay(3000);
     aprs_send_telemetry_unit_label(2, A1_unit, A2_unit); delay(3000);
     aprs_send_telemetry_report(2, current_state, 50); delay(3000);
-    
-
-        //aprs_send((int)current_state);
+    aprs_send_telemetry_eqns(2, A1a,A1b,A1c, A2a,A2b,A2c);
+    aprs_send_telemetry_bit_sense_project_name(0,0,0,0,0,0,0,0,0, "wodowskaz");
 }
