@@ -18,8 +18,18 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
+/* 
+   NOTE by SQ6JNX: according to APRS101, p. 93 there is no ID we can use for
+   water gauges, but, as stated below, symbol in the information field takes
+   precedence. Anyhow, we should not care about SSID.
+
+   On the other hand, APRSdroid (google it) states, that SSIDs 1 to 4 and 15 are
+   free ("unused"). I suggest, that one should use 1 to 4 or 15, as stated in
+   APRSdroid.
+*/
+
 #define S_CALLSIGN      "SQ6JNX"
-#define S_CALLSIGN_ID   0
+#define S_CALLSIGN_ID   15
 
 // Destination callsign: APRS (with SSID=0) is usually okay.
 #define D_CALLSIGN      "APRS"
@@ -31,7 +41,7 @@
 #define OBJECT_LATITUDE    "5107.76N"
 #define OBJECT_LONGITUDE   "1654.26E"
 #define OBJECT_NAME        "Byst/Jarn"
-#define OBJECT_COMMENT     "Bystrzyca/Jarnoltow " // please append space!
+#define OBJECT_COMMENT     "wodowskaz Bystrzyca/Jarnoltow " // please append space!
 
 #define WATER_MOUNT_HEIGHT   300
 #define WATER_WARN_STATE     120
@@ -44,10 +54,10 @@
 #define A1b 1   // water level
 #define A1c 0
 
-#define A2_name "Vin"
+#define A2_name "Vs"
 #define A2_unit "V"
 #define A2a 0
-#define A2b 0.1 // input voltage
+#define A2b 0.1 // source voltage
 #define A2c 0
 
 /* unused  */
