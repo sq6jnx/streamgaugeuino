@@ -15,6 +15,12 @@
 #include <avr/power.h>
 #include <avr/sleep.h>
 
+
+
+#ifdef DHTPIN
+DHT dht(DHTPIN, DHTTYPE);
+#endif
+
 void setup() {
  pinMode(SONAR_TRIGGER_PIN,OUTPUT);  // set TP output pin for trigger
  pinMode(SONAR_ECHO_PIN,INPUT);      // set EP input pin for echo
@@ -28,7 +34,11 @@ void setup() {
    modem_setup();                                                                
    //buzzer_setup();                                                               
   pinMode(SONAR_ECHO_PIN, INPUT);
-           
+
+#ifdef DHTPIN
+dht.begin();
+#endif
+
 }
 
 void aprs_send_position_report(char* symbol)
@@ -284,54 +294,38 @@ void aprs_send_telemetry_unit_label(
   ax25_flush_frame();
 }
 
-
-
-
-
-
-
-
- //Exported functions // taken from aprs.cpp and modified by SQ6JNX
-void aprs_send(int poziom_wody)
+double get_temperature()
 {
-  const struct s_address addresses[] = { 
-    {D_CALLSIGN, D_CALLSIGN_ID},  // Destination callsign
-    {S_CALLSIGN, S_CALLSIGN_ID},  // Source callsign (-11 = balloon, -9 = car)
-/*#ifdef DIGI_PATH1
-    {DIGI_PATH1, DIGI_PATH1_TTL}, // Digi1 (first digi in the chain)
-#endif
-#ifdef DIGI_PATH2
-    {DIGI_PATH2, DIGI_PATH2_TTL}, // Digi2 (second digi in the chain)
-#endif*/
-  };
+#ifdef DHTPIN
+  float h = dht.readHumidity();
+  float t = dht.readTemperature();
 
-  char symbol[3]="/w";
-  char buffer[33];
-  if(poziom_wody>WATER_WARN_STATE) {
-      strcpy(symbol,"\\w");
-  } else if (poziom_wody<0) {
-        strcpy(buffer, "ERR");
+  // check if returns are valid, if they are NaN (not a number) then something went wrong!
+  if (isnan(t) || isnan(h)) {
+    Serial.println("Failed to read from DHT");
+    return 0;
   } else {
-      itoa(poziom_wody,buffer,10);
+    Serial.print("Humidity: ");
+    Serial.print(h);
+    Serial.print(" %\t");
+    Serial.print("Temperature: ");
+    Serial.print(t);
+    Serial.println(" *C");
+    return -30;;
+    return t;
   }
+#else
+  return 0
+#endif
 
-  ax25_send_header(addresses, sizeof(addresses)/sizeof(s_address));
-  ax25_send_byte(')');                 // Item report format
-  ax25_send_string(OBJECT_NAME);       // Item name
-  ax25_send_byte('!');                 // Live Item
-  ax25_send_string(OBJECT_LATITUDE);   // Lat: 38deg and 22.20 min (.20 are 
-                                       // NOT seconds, but 1/100th of minutes)
-  ax25_send_byte(symbol[0]);                 // Symbol table ID
-  ax25_send_string(OBJECT_LONGITUDE);  // Lon: 000deg and 25.80 min
-  ax25_send_byte(symbol[1]);                 // Symbol code (w==water station)
-  // comment:  36-43 chars
-  ax25_send_string(OBJECT_COMMENT);
-  ax25_send_string(buffer);
-  ax25_send_string("/140/180cm 5.7V");   
-
-  ax25_send_footer();
-  ax25_flush_frame();              // Tell the modem to go
 }
+
+double pace_of_sound(double temperature)
+{
+    double c=331.3 + 0.6*temperature;
+    c/=10000;
+    return 1/c;
+}         
 
 double get_distance() {
   int duration, distance;
@@ -339,7 +333,7 @@ double get_distance() {
   delayMicroseconds(1000);
   digitalWrite(SONAR_TRIGGER_PIN, LOW);
   duration = pulseIn(SONAR_ECHO_PIN, HIGH);
-  distance = (duration/2) / 29.1;
+  distance = (duration/2) / pace_of_sound(get_temperature());
   if (distance >= 500 || distance <= 0){
       return -1;
   }
@@ -352,6 +346,9 @@ double get_distance() {
 
 
 void loop() {
+
+    get_temperature();
+
     char* symbol="/w";
     double sensor = get_distance();
     double current_state=0;

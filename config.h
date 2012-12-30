@@ -84,6 +84,11 @@
 #define SONAR_TRIGGER_PIN  9
 #define SONAR_ECHO_PIN    10
 
+
+#include "DHT.h"
+#define DHTPIN 2 // what pin we're connected to
+#define DHTTYPE DHT22 // DHT 22 (AM2302)
+
 //// --------------------------------------------------------------------------
 //// THIS IS THE TRACKUINO FIRMWARE CONFIGURATION FILE. YOUR CALLSIGN AND
 //// OTHER SETTINGS GO HERE.
